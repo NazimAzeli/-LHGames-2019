@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    implementation 'com.microsoft.signalr:signalr:1.0.0'
+    implementation 'com.microsoft.signalr:signalr:3.0.0'
 }
 
 mainClassName = 'io.polyhx.lhgames.App'

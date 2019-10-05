@@ -35,7 +35,7 @@ public class GameServerService {
         }
 
         fBot = new Bot();
-        fHubConnection = HubConnectionBuilder.create(App.LHAPI_URL + "/teamshub").build();
+        fHubConnection = HubConnectionBuilder.create(App.GAME_SERVER_URL + "/teamshub").build();
         fHubConnection.on("RequestExecuteTurn", this::onRequestExecuteTurn,
                 String[].class,
                 Integer.class,
@@ -45,11 +45,11 @@ public class GameServerService {
                 Integer.class
         );
         fHubConnection.on("ReceiveFinalMap", this::onReceiveFinalMap, String[].class);
-        fHubConnection.start().doOnComplete(this::onConnect);
-        fHubConnection.send("Register", System.getenv("TEAM_ID"));
+        fHubConnection.start().doOnComplete(this::onConnect).blockingAwait();
     }
 
     private void onConnect() {
+        fHubConnection.send("Register", System.getenv("TEAM_ID"));
         System.out.println("game server: connection opened and handshake received");
     }
 
