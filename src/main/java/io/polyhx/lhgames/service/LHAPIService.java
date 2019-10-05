@@ -29,13 +29,17 @@ public class LHAPIService {
         }
 
         fHubConnection = HubConnectionBuilder.create(App.LHAPI_URL + "/teamshub").build();
-        fHubConnection.on("AssignGameServerUriToGameId", (gameserverUri) -> {
-            App.GAME_SERVER_URL = gameserverUri;
-            GameServerService.getInstance().start();
-        }, String.class);
-        fHubConnection.start().doOnComplete(() -> {
-            System.out.println("lhapi: connection opened and handshake received");
-            fHubConnection.invoke(String.class,"Register", System.getenv("TEAM_ID"), System.getenv("GAME_ID"));
-        });
+        fHubConnection.on("AssignGameServerUriToGameId", this::onAssignGameServerUriToGameId, String.class);
+        fHubConnection.start().doOnComplete(this::onConnect).subscribe();
+    }
+
+    private void onAssignGameServerUriToGameId(String uri) {
+        App.GAME_SERVER_URL = uri;
+        GameServerService.getInstance().start();
+    }
+
+    private void onConnect() {
+        fHubConnection.send("Register", System.getenv("TEAM_ID"), System.getenv("GAME_ID"));
+        System.out.println("lhapi: connection opened and handshake received");
     }
 }

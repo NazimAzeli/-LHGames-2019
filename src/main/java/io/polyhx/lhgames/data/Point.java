@@ -19,7 +19,9 @@ public class Point {
     public int getY() {
         return fY;
     }
-
+    public Point add(Point pt){
+        return new Point(fX + pt.getX(),fY + pt.getY());
+    }
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Point) {

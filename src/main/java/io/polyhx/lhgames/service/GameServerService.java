@@ -10,6 +10,7 @@ import io.polyhx.lhgames.Bot;
 import io.polyhx.lhgames.data.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameServerService {
@@ -45,7 +46,7 @@ public class GameServerService {
                 Integer.class
         );
         fHubConnection.on("ReceiveFinalMap", this::onReceiveFinalMap, String[].class);
-        fHubConnection.start().doOnComplete(this::onConnect).blockingAwait();
+        fHubConnection.start().doOnComplete(this::onConnect).subscribe();
     }
 
     private void onConnect() {
@@ -70,13 +71,13 @@ public class GameServerService {
         int hostMovementLeft = left;
         Direction hostLastMove = Direction.fromInteger(last);
         HostPlayer host = new HostPlayer(
-            hostTeam,
-            hostPosition,
-            hostTail,
-            hostBody,
-            hostMaxMovement,
-            hostMovementLeft,
-            hostLastMove
+                hostTeam,
+                hostPosition,
+                hostTail,
+                hostBody,
+                hostMaxMovement,
+                hostMovementLeft,
+                hostLastMove
         );
 
         List<Player> others = new ArrayList<>();
@@ -85,14 +86,19 @@ public class GameServerService {
             int otherTail = currentMap.getTailLength(otherTeam);
             int otherBody = currentMap.getBodySize(otherTeam);
             others.add(new Player(
-                otherTeam,
-                otherPosition,
-                otherTail,
-                otherBody
+                    otherTeam,
+                    otherPosition,
+                    otherTail,
+                    otherBody
             ));
         }
 
-        GameInfo info = new GameInfo(currentMap, host, (Player[]) others.toArray());
+        Player[] players = new Player[others.size()];
+        for(int i = 0; i < others.size(); i++) {
+            players[i] = others.get(i);
+        }
+
+        GameInfo info = new GameInfo(currentMap, host, players);
 
         Direction next = fBot.getNextDirection(info);
         System.out.println(String.format("game server: next move is '%s'", next.toString()));
