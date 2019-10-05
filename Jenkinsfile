@@ -9,10 +9,10 @@ node {
     }
 
     stage('Build image') {
-        sh 'docker build -t gcr.io/lhgames-2019-253516/beefcakes:version-$BUILD_NUMBER .'
+        sh 'docker build -t gcr.io/lhgames-2019-253516/beefcakes .'
     }
 
     stage('Push image') {
-        sh 'docker push gcr.io/lhgames-2019-253516/beefcakes:version-$BUILD_NUMBER'
+        sh 'docker push gcr.io/lhgames-2019-253516/beefcakes'
     }
 }
