@@ -1,13 +1,12 @@
-FROM microsoft/dotnet:2.1-sdk-bionic
-WORKDIR /dotnet/LHGames
+############################################
+#          DO NOT TOUCH THIS FILE          #
+############################################
+FROM openjdk:8-alpine
 
-RUN apt-get update
-RUN apt-get install -y libunwind-dev
+RUN apk add gradle
 
-COPY . .
+ADD . /lhgames
+WORKDIR /lhgames
+RUN gradle build
 
-RUN dotnet restore
-RUN dotnet publish -c Release -o out -r linux-x64
-
-ENTRYPOINT ["dotnet", "LHGames/out/LHGames.dll"]
-EXPOSE 3000
+ENTRYPOINT gradle run

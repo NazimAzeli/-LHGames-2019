@@ -1,15 +1,17 @@
-# CSharp-seed
+# Java-seed
 
-## Dependency
+## Importing in IntelliJ
 
-Version: .Net 2.1
----
-## Instructions
+1. Import project
+2. Select this directory
+3. Select "Import project from external model"
+4. Select "Gradle"
+5. Click "Finish"
 
-Code your bot logic in the function **ExecuteTurn()**  which you can find in the **Bot/Playerbot.cs**
+You can run the project with the following command:
 
-Param:   
-**GameInfo gameInfo**: Information send by the server. You can find a map, some information about your adversary and some other information about yourself. 
+```
+$ gradle run
+```
 
-Return:     
-**Direction**: Return direction that bot will take in its next move
+
