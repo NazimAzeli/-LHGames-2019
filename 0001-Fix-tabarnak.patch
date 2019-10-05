@@ -1,0 +1,52 @@
+From 47d1bd2b33baae8aeaa4cc8b98b1e827210a4662 Mon Sep 17 00:00:00 2001
+From: Gabriel-Andrew Pollo-Guilbert <gabrielpolloguilbert@gmail.com>
+Date: Sat, 5 Oct 2019 13:13:52 -0400
+Subject: [PATCH] Fix tabarnak
+
+---
+ build.gradle                                                | 2 +-
+ .../java/io/polyhx/lhgames/service/GameServerService.java   | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/build.gradle b/build.gradle
+index 35cf95c..43512b4 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -14,7 +14,7 @@ repositories {
+ 
+ dependencies {
+     testCompile group: 'junit', name: 'junit', version: '4.12'
+-    implementation 'com.microsoft.signalr:signalr:1.0.0'
++    implementation 'com.microsoft.signalr:signalr:3.0.0'
+ }
+ 
+ mainClassName = 'io.polyhx.lhgames.App'
+diff --git a/src/main/java/io/polyhx/lhgames/service/GameServerService.java b/src/main/java/io/polyhx/lhgames/service/GameServerService.java
+index 6f93465..0c498bd 100644
+--- a/src/main/java/io/polyhx/lhgames/service/GameServerService.java
++++ b/src/main/java/io/polyhx/lhgames/service/GameServerService.java
+@@ -35,7 +35,7 @@ public class GameServerService {
+         }
+ 
+         fBot = new Bot();
+-        fHubConnection = HubConnectionBuilder.create(App.LHAPI_URL + "/teamshub").build();
++        fHubConnection = HubConnectionBuilder.create(App.GAME_SERVER_URL + "/teamshub").build();
+         fHubConnection.on("RequestExecuteTurn", this::onRequestExecuteTurn,
+                 String[].class,
+                 Integer.class,
+@@ -45,11 +45,11 @@ public class GameServerService {
+                 Integer.class
+         );
+         fHubConnection.on("ReceiveFinalMap", this::onReceiveFinalMap, String[].class);
+-        fHubConnection.start().doOnComplete(this::onConnect);
+-        fHubConnection.send("Register", System.getenv("TEAM_ID"));
++        fHubConnection.start().doOnComplete(this::onConnect).blockingAwait();
+     }
+ 
+     private void onConnect() {
++        fHubConnection.send("Register", System.getenv("TEAM_ID"));
+         System.out.println("game server: connection opened and handshake received");
+     }
+ 
+-- 
+2.23.0
