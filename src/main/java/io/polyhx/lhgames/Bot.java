@@ -90,6 +90,28 @@ public class Bot {
         return new Point(0, 0);
     }
     // recursivite baby
+    public Path getSimplePath(Point position, Point target){
+        Path path = new Path();
+        int distanceX = target.getX() - position.getX();
+        int distanceY = target.getY() - position.getY();
+
+        for(int i = 0;i<Math.abs(distanceX);i++){
+            if(distanceX < 0)
+                path.add(new Point(-1,0));
+            else
+                path.add(new Point(1,0));
+        }
+
+        for(int i =0;i<Math.abs(distanceY);i++){
+            if(distanceY < 0)
+                path.add(new Point(0,-1));
+            else
+                path.add(new Point(0,1));
+        }
+
+        return path;
+    }
+
 
     public LinkedList<Path> getPath(Point currentPos, int nbMoveLeft, Point movePrec, GameInfo info) {
 
@@ -97,6 +119,40 @@ public class Bot {
 
         // si on se trouve sur notre territoire et ce n'est pas notre premier move
         boolean onFriendlyTerritoire = surNotreTerritoire(info, info.getMap().getTiles(), currentPos);
+
+        if(onFriendlyTerritoire && nbMoveLeft == info.getHostPlayer().getMaxMove()){
+            LinkedList<Point> movesDispo = trouverMovesDispo(currentPos, movePrec, nbMoveLeft, info);
+            LinkedList<Path>pathsToClosestTile = new LinkedList<>();
+            for(Point move : movesDispo){
+                // Find closest empty case
+                for(int i =0;i<16;i++){
+                    for(int j=0;j<16;j++){
+                        Tile tile = info.getMap().getTiles()[i][j];
+                        if(tile.isEmpty()){
+                            // found tile and its path
+                            Path path = getSimplePath(currentPos,tile.getPosition());
+                            pathsToClosestTile.addLast(path);
+                        }
+                    }
+                }
+
+                // find closest path
+                int minSize = 100;
+                Path minPath = new Path();
+                for(Path p : pathsToClosestTile){
+                    if(p.moves.size() < minSize){
+                        minPath = p;
+                        minSize = p.moves.size();
+                    }
+                }
+                // return closest path
+                LinkedList<Path>temp = new LinkedList<>();
+                temp.add(minPath);
+                return temp;
+                 // go
+            }
+        }
+
 
         if (onFriendlyTerritoire && nbMoveLeft != info.getHostPlayer().getMaxMove()) {
             Path path = new Path();
@@ -177,9 +233,9 @@ public class Bot {
 
     public boolean isInBounds(Point coord) {
 
-        if (coord.getX() < 0 || coord.getX() > 15)
+        if (coord.getX() < 1 || coord.getX() > 14)
             return false;
-        if (coord.getY() < 0 || coord.getY() > 15)
+        if (coord.getY() < 1 || coord.getY() > 14)
             return false;
         return true;
     }
