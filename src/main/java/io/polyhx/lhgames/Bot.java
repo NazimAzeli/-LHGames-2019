@@ -46,6 +46,8 @@ public class Bot {
     }
 
     public boolean isPathViable(Point pos, Path path) {
+        if(path.moves.size() > 11)
+            return false;
         LinkedList<Point> casesVisites = new LinkedList<Point>();
         for (Point move : path.moves) {
             // si la position est deja dans la liste kill it
@@ -120,7 +122,7 @@ public class Bot {
         // si on se trouve sur notre territoire et ce n'est pas notre premier move
         boolean onFriendlyTerritoire = surNotreTerritoire(info, info.getMap().getTiles(), currentPos);
 
-        if(onFriendlyTerritoire && nbMoveLeft == info.getHostPlayer().getMaxMove()){
+        if(onFriendlyTerritoire && info.getHostPlayer().getMoveLeft() == info.getHostPlayer().getMaxMove()){
             LinkedList<Point> movesDispo = trouverMovesDispo(currentPos, movePrec, nbMoveLeft, info);
             LinkedList<Path>pathsToClosestTile = new LinkedList<>();
             for(Point move : movesDispo){
